@@ -52,8 +52,8 @@ try:
                 print(msg.error())
                 break
 
-        lcd_message = msg.value()["results"]["plate"].decode('utf-8')
-        display_on_lcd(lcd_message)
+        lcd_message = msg.value().decode('utf-8')
+        display_on_lcd(lcd_message["results"]["plate"])
 
 except KeyboardInterrupt:
     
