@@ -6,4 +6,4 @@ COPY ./ ./
 COPY requirements.txt ./
 RUN pip install -r requirements.txt
 RUN rm requirements.txt
-#ENTRYPOINT ["python", "plate_displayer.py"]
+ENTRYPOINT ["python", "plate_displayer.py"]
