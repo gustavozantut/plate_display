@@ -7,31 +7,25 @@ void setup() {
   lcd.begin(16, 2);  // Initialize the LCD
   lcd.print("LCD Ready");  // Display a startup message
   delay(2000);
+
+  Serial.begin(9600);  // Initialize serial communication
 }
 
 void loop() {
   if (Serial.available() > 0) {
-    char command = Serial.read();
-
-    switch (command) {
-      case 'U':
-        uploadCode();
-        break;
-      case 'R':
-        runCode();
-        break;
-    }
+    String message = readSerialMessage();
+    displayOnLCD(message);
   }
 }
 
-void uploadCode() {
-  // Implement code upload logic here
-  // This function should read the code from serial and upload it to Arduino
-}
-
-void runCode() {
-  // Implement code run logic here
-  // This function should execute the uploaded code on Arduino
+String readSerialMessage() {
+  String message = "";
+  while (Serial.available() > 0) {
+    char c = Serial.read();
+    message += c;
+    delay(2);  // Small delay to allow complete message reception
+  }
+  return message;
 }
 
 void displayOnLCD(String message) {
