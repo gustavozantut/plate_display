@@ -23,7 +23,7 @@ consumer.subscribe(['plate_detector'])
 
 def display_on_lcd(arduino=arduino_port, i2c_address=lcd_i2c_address, lcd_columns=lcd_columns, lcd_rows=lcd_rows, message="XXXXXXX"):
     # Define I2C LCD configuration
-    lcd = arduino.I2C(i2c_address, lcd_columns, lcd_rows)
+    lcd = board.I2C(i2c_address, lcd_columns, lcd_rows)
 
     # Clear the LCD
     lcd.write("\x01")  # 0x01 is the ASCII control code for Clear Display
