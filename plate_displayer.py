@@ -1,30 +1,41 @@
-from RPLCD.i2c import CharLCD
 from confluent_kafka import Consumer, KafkaError
+import serial
 import time
-import json
 
-# Initialize LCD with I2C address 0x27
-lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, backlight_enabled=True)
+arduino_port = 'COM3'
+arduino_code_path = './lcd_displayer.ino'
 
-# Kafka Consumer configuration
-consumer_conf = {
+kafka_config = {
     'bootstrap.servers': '192.168.0.101:9092,192.168.14.2:9092,192.168.14.2:9093',
     'group.id': 'plate_displayer',
     'auto.offset.reset': 'earliest'
 }
 
-# Create Kafka Consumer
-consumer = Consumer(consumer_conf)
-
-# Subscribe to the Kafka topic
+consumer = Consumer(kafka_config)
 consumer.subscribe(['plate_detector'])
+
+ser = serial.Serial(arduino_port, 9600, timeout=5)
+
+def upload_and_run_code(code):
+    
+    ser.write(b'U')
+    time.sleep(2)
+    ser.write(code.encode())
+    ser.write(b'R')
+
+def display_on_lcd(message):
+    
+    ser.write(b'U')  # Upload code to Arduino
+    time.sleep(2)
+    code_to_display = f'displayOnLCD("{message}")'
+    ser.write(code_to_display.encode())
+    ser.write(b'R')  # Run the code to display on LCD
 
 try:
     
     while True:
         
-        # Poll for messages
-        msg = consumer.poll(timeout=1000)  # Adjust the timeout as needed
+        msg = consumer.poll(1.0)
 
         if msg is None:
             
@@ -34,7 +45,6 @@ try:
             
             if msg.error().code() == KafkaError._PARTITION_EOF:
                 
-                # End of partition event, not an error
                 continue
             
             else:
@@ -42,24 +52,8 @@ try:
                 print(msg.error())
                 break
 
-        # Decode and display the license plate
-        try:
-            
-            plate_info = json.loads(msg.value().decode('utf-8'))
-            plate = plate_info["results"]["plate"]
-
-            # Display the license plate on the LCD
-            lcd.clear()
-            lcd.write_string("License Plate:")
-            lcd.cursor_pos = (1, 0)
-            lcd.write_string(plate)
-
-            # Wait for a few seconds
-            time.sleep(1)
-
-        except json.JSONDecodeError as e:
-            
-            continue
+        lcd_message = msg.value()["results"]["plate"].decode('utf-8')
+        display_on_lcd(lcd_message)
 
 except KeyboardInterrupt:
     
@@ -67,5 +61,5 @@ except KeyboardInterrupt:
 
 finally:
     
-    # Close the Kafka Consumer
     consumer.close()
+    ser.close()

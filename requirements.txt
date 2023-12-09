@@ -1,3 +1,2 @@
-RPLCD
 confluent_kafka
-smbus2
+serial
