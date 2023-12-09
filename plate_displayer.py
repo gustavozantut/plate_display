@@ -55,8 +55,9 @@ try:
 
         lcd_message = msg.value().decode('utf-8')
         lcd_message = json.loads(lcd_message)
+        print(lcd_message)
         lcd_message = lcd_message["results"]["plate"]
-        display_on_lcd(lcd_message["results"]["plate"])
+        display_on_lcd(lcd_message)
 
 except KeyboardInterrupt:
     
