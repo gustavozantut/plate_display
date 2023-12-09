@@ -56,7 +56,9 @@ try:
         lcd_message = msg.value().decode('utf-8')
         lcd_message = json.loads(lcd_message)
         lcd_message = lcd_message["results"][0]["plate"]
+        print(f"sending plate {lcd_message} to ino")
         display_on_lcd(lcd_message)
+        print(f"plate sent")
 
 except KeyboardInterrupt:
     
