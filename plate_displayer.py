@@ -2,6 +2,7 @@ from confluent_kafka import Consumer, KafkaError
 from pyfirmata import Arduino, util
 import time
 import json
+import smbus3
 
 arduino_port = '/dev/ttyACM0'
 board = Arduino(arduino_port)
@@ -21,21 +22,39 @@ kafka_config = {
 consumer = Consumer(kafka_config)
 consumer.subscribe(['plate_detector'])
 
-def display_on_lcd(arduino=arduino_port, i2c_address=lcd_i2c_address, lcd_columns=lcd_columns, lcd_rows=lcd_rows, message="XXXXXXX"):
-    # Define I2C LCD configuration
-    lcd = board.I2C(i2c_address, lcd_columns, lcd_rows)
+def display_on_lcd(i2c_address=0x27, message="XXXXXXX"):
+    # Create an smbus object
+    bus = smbus.SMBus(1)  # Use 0 for older Raspberry Pi boards
+
+    # I2C LCD configuration
+    lcd_control = 0x08  # Control byte for LCD
+    lcd_data = 0x40     # Data byte for LCD
+
+    # Define function set command for 4-bit mode
+    fs_command = 0b00101000  # Function Set: 4-bit mode, 2 lines, 5x8 font
+    bus.write_byte_data(i2c_address, lcd_control, fs_command)
+
+    # Define entry mode command
+    em_command = 0b00000110  # Entry Mode Set: Increment cursor, no display shift
+    bus.write_byte_data(i2c_address, lcd_control, em_command)
 
     # Clear the LCD
-    lcd.write("\x01")  # 0x01 is the ASCII control code for Clear Display
+    bus.write_byte_data(i2c_address, lcd_control, 0x01)
+    time.sleep(0.1)  # Wait for the clear command to complete
 
     # Display the message on the LCD
-    lcd.write(message)
+    for char in message:
+        lcd_byte = ord(char)
+        bus.write_i2c_block_data(i2c_address, lcd_data, [lcd_byte, 0b00010000])  # High nibble, RS = 1
+        bus.write_i2c_block_data(i2c_address, lcd_data, [lcd_byte << 4, 0b00010000])  # Low nibble, RS = 1
+        time.sleep(0.01)  # Short delay between characters
 
     # Wait for a moment to view the message (adjust as needed)
     time.sleep(2)
 
     # Clear the LCD again
-    lcd.write("\x01")
+    bus.write_byte_data(i2c_address, lcd_control, 0x01)
+    time.sleep(0.1)
 
 try:
     
