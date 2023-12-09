@@ -1,2 +1,3 @@
 RPLCD
 confluent_kafka
+smbus2
