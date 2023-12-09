@@ -53,7 +53,9 @@ try:
                 print(msg.error())
                 break
 
-        lcd_message = json.loads(msg.value().decode('utf-8'))
+        lcd_message = msg.value().decode('utf-8')
+        lcd_message = json.loads(lcd_message)
+        lcd_message = lcd_message["results"]["plate"]
         display_on_lcd(lcd_message["results"]["plate"])
 
 except KeyboardInterrupt:
