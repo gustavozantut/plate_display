@@ -53,6 +53,7 @@ try:
                 break
 
         lcd_message = msg.value().decode('utf-8')
+        print(lcd_message)
         display_on_lcd(lcd_message["results"]["plate"])
 
 except KeyboardInterrupt:
