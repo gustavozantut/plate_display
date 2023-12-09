@@ -4,7 +4,7 @@ import time
 import json
 
 # Initialize LCD with I2C address 0x27
-lcd = CharLCD(i2c_expander='PCF8574', address=0x27, port=1, cols=16, rows=2, backlight_enabled=True)
+lcd = CharLCD('PCF8574', 0x27)
 
 # Kafka Consumer configuration
 consumer_conf = {
