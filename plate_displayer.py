@@ -1,10 +1,16 @@
 from confluent_kafka import Consumer, KafkaError
-import serial
+from pyfirmata import Arduino, util
 import time
 import json
 
 arduino_port = '/dev/ttyACM0'
-arduino_code_path = './lcd_displayer.ino'
+board = Arduino(arduino_port)
+it = util.Iterator(board)
+it.start()
+# Define I2C LCD configuration
+lcd_i2c_address = 0x27  # Adjust the address based on your I2C LCD module
+lcd_columns = 16
+lcd_rows = 2
 
 kafka_config = {
     'bootstrap.servers': '192.168.0.101:9092,192.168.14.2:9092,192.168.14.2:9093',
@@ -15,22 +21,21 @@ kafka_config = {
 consumer = Consumer(kafka_config)
 consumer.subscribe(['plate_detector'])
 
-ser = serial.Serial(arduino_port, 9600, timeout=5)
+def display_on_lcd(arduino=arduino_port, i2c_address=lcd_i2c_address, lcd_columns=lcd_columns, lcd_rows=lcd_rows, message="XXXXXXX"):
+    # Define I2C LCD configuration
+    lcd = arduino.I2C(i2c_address, lcd_columns, lcd_rows)
 
-def upload_and_run_code(code):
-    
-    ser.write(b'U')
-    time.sleep(2)
-    ser.write(code.encode())
-    ser.write(b'R')
+    # Clear the LCD
+    lcd.write("\x01")  # 0x01 is the ASCII control code for Clear Display
 
-def display_on_lcd(message):
-    
-    ser.write(b'U')  # Upload code to Arduino
+    # Display the message on the LCD
+    lcd.write(message)
+
+    # Wait for a moment to view the message (adjust as needed)
     time.sleep(2)
-    code_to_display = f'displayOnLCD("{message}")'
-    ser.write(code_to_display.encode())
-    ser.write(b'R')  # Run the code to display on LCD
+
+    # Clear the LCD again
+    lcd.write("\x01")
 
 try:
     
@@ -57,7 +62,7 @@ try:
         lcd_message = json.loads(lcd_message)
         lcd_message = lcd_message["results"][0]["plate"]
         print(f"sending plate {lcd_message} to ino")
-        display_on_lcd(lcd_message)
+        display_on_lcd(message=lcd_message)
         print(f"plate sent")
 
 except KeyboardInterrupt:
@@ -67,4 +72,4 @@ except KeyboardInterrupt:
 finally:
     
     consumer.close()
-    ser.close()
+    board.exit()

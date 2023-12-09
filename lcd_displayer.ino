@@ -23,7 +23,7 @@ String readSerialMessage() {
   while (Serial.available() > 0) {
     char c = Serial.read();
     message += c;
-    delay(2);  // Small delay to allow complete message reception
+    delay(10);  // Small delay to allow complete message reception
   }
   return message;
 }
