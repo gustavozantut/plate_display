@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaError
 import serial
 import time
 
-arduino_port = 'COM3'
+arduino_port = '/dev/ttyACM0'
 arduino_code_path = './lcd_displayer.ino'
 
 kafka_config = {
