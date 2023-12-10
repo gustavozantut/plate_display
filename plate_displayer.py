@@ -43,7 +43,7 @@ try:
 
         lcd_message = msg.value().decode('utf-8')
         lcd_message = json.loads(lcd_message)
-        lcd_message = '      '+lcd_message["results"][0]["plate"]
+        lcd_message = '     '+lcd_message["results"][0]["plate"]+'\n'
         print(f"sending plate {lcd_message} to ino")
         display_on_lcd(message=lcd_message)
         print(f"plate sent")
