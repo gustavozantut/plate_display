@@ -5,7 +5,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);  // Set the I2C address and LCD dimensions
 
 void setup() {
   lcd.init();
-  lcd.setBacklight(MEDIUM);
+  lcd.setBacklight(LOW);
   lcd.setCursor(0,0);
   lcd.print("     PISTA 1");  // Display "PISTA 1" on the first line
   Serial.begin(9600);  // Initialize serial communication
