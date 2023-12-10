@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaError
 from pyfirmata import Arduino, util
 import time
 import json
-import smbus
+import smbus2
 
 arduino_port = '/dev/ttyACM0'
 board = Arduino(arduino_port)
@@ -24,7 +24,7 @@ consumer.subscribe(['plate_detector'])
 
 def display_on_lcd(i2c_address=0x27, message="XXXXXXX"):
     # Create an smbus object
-    bus = smbus.SMBus(1)  # Use 0 for older Raspberry Pi boards
+    bus = smbus2.SMBus(1)  # Use 0 for older Raspberry Pi boards
 
     # I2C LCD configuration
     lcd_control = 0x08  # Control byte for LCD
