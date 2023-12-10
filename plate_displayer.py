@@ -2,7 +2,7 @@ from confluent_kafka import Consumer, KafkaError
 from pyfirmata import Arduino, util
 import time
 import json
-import smbus3
+import smbus
 
 arduino_port = '/dev/ttyACM0'
 board = Arduino(arduino_port)
