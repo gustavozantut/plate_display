@@ -41,7 +41,7 @@ consumer.subscribe(['plate_detector'])
 def display_on_lcd(message="XXXXXXX"):
     
     ser.write(message.encode())
-    #time.sleep(1)  # Add a delay if necessary
+    time.sleep(0.5)  # Add a delay if necessary
 
 try:
     
