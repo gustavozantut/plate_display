@@ -26,7 +26,7 @@ def configure_logging():
     logger.addHandler(file_handler)
     logger.addHandler(console_handler)
 
-arduino_port = '/dev/ttyACM1'
+arduino_port = '/dev/ttyACM0'
 ser = serial.Serial(arduino_port, 9600, timeout=5)
 
 kafka_config = {
