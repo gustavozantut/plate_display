@@ -62,7 +62,6 @@ try:
             else:
                 
                 print(msg.error())
-                break
 
         lcd_message = msg.value().decode('utf-8')
         lcd_message = json.loads(lcd_message)
