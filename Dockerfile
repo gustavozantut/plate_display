@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.9
 RUN git clone https://github.com/gustavozantut/plate_display /usr/src/app/plate_display/
 WORKDIR /usr/src/app/plate_display
 RUN apt-get update -y
