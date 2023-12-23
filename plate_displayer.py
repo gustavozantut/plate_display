@@ -1,10 +1,11 @@
-from confluent_kafka import Consumer, KafkaError
 import time
 import json
 import serial
 import logging
+from confluent_kafka import Consumer, KafkaError
 
 def configure_logging():
+    
     # Create a logger
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
